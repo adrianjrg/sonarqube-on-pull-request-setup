@@ -19,8 +19,8 @@
 Using information from: http://www.jouvinio.net/wiki/index.php/Sonar_Configuration_MySQL
 ## Database setup
 1. Create new schema for sonarqube:
-```shell
-mysql> create database sonar CHARACTER SET UTF8;
+```mysql
+create database sonar CHARACTER SET UTF8;
 ```
 
 2. Create user: (replace `<SONAR_USER>` and `<SONAR_PASSWORD>` with your own)
