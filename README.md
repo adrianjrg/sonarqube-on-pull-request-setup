@@ -66,7 +66,7 @@ See below for full configuration.
 
 ### Build Breaker plugin for SonarQube ([download](https://github.com/SonarQubeCommunity/sonar-build-breaker))
 
-Lets SonarQube fail the jenkins build on certain conditions  
+Lets SonarQube fail the jenkins build on certain conditions.  
 When used from jenkins:  
 ```
 sonar.buildbreaker.skip=(true|false)
@@ -82,12 +82,12 @@ Easy integration of SonarQube into jenkins (gives you a build block that is used
 
 ### GitHub Pull Request Builder plugin ([download](https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin))
 
-Triggers the jenkins build on webhook or cron (default 5 min) and generates the needed environment variables
+Triggers the jenkins build on webhook or cron (default 5 min) and generates the needed environment variables.
 			
 # Starting SonarQube:
 1. Run `<sonarqube-dir>/bin/linux-x86-64/sonar.sh { console | start | stop | restart | status | dump }`
-   - `console` to see what is happening
-   - `start`, `stop`, `restart`, `status` otherwise
+   - `console` to see what is happening.
+   - `start`, `stop`, `restart`, `status` otherwise.
 2. Web interface at `http://localhost:9000`
 3. Login with `admin/admin`
 	
@@ -106,7 +106,7 @@ Triggers the jenkins build on webhook or cron (default 5 min) and generates the 
 	Add secret (optional)
 	Add credentials (github-user/github-oauth-token)  
     - Recommended to run this from a seperate 'bot' account  
-		Needs 'repo' permissions, including `repo:status`, `repo_deployment` and `public_repo`  
+		Needs 'repo' permissions, including `repo:status`, `repo_deployment` and `public_repo`.  
 		Account needs at least pull access. Push access lets it put the results as 'tests' instead of comments, meaning the "Merge" button turns red on fail. 
 
 ## Setting up Freestyle Project for Pull Requests ADD PICTURES
@@ -117,17 +117,18 @@ Triggers the jenkins build on webhook or cron (default 5 min) and generates the 
 ### Source Code Management
 - Git
   - Add repository and credentials
-  - Under Advanced
-  name: origin  
+  - Under Advanced  
+  name: `origin`  
   refspec: `+refs/pull/*:refs/remotes/origin/pr/*`  
-  alternate refspec:  
-  recommended: http://macoscope.com/blog/using-sonarqube-with-jenkins-continuous-integration-and-github-to-improve-code-review/  
-  refspec that worked on testing:		`+refs/pull/*:refs/remotes/origin/pr/*`  
-  recommended on: https://github.com/jenkinsci/ghprb-plugin#creating-a-job  
-  refspec that's recommended for pr: 	`+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*`  
-  refspec for pr + branch:			`+refs/heads/*:refs/remotes/origin/* +refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*`
+  Other refspec configurations:  
+  
+  | refspec | use | recommened by |
+  |---------|-----|---------------|
+  |`+refs/pull/*:refs/remotes/origin/pr/*`| Get all pull requests | [link](http://macoscope.com/blog/using-sonarqube-with-jenkins-continuous-integration-and-github-to-improve-code-review/)|
+  |`+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*`| Get only current pull request |[link](https://github.com/jenkinsci/ghprb-plugin#creating-a-job) |
+  |`+refs/heads/*:refs/remotes/origin/* +refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*`| Get branches and current pull request|[link](https://github.com/jenkinsci/ghprb-plugin#creating-a-job)
 
-- Set "Branches to build" to `${sha1}` (environment variable is set by GitHub Pull Request Builder)
+  - Set "Branches to build" to `${sha1}` (environment variable is set by GitHub Pull Request Builder)
 
 ### Build Triggers
 - Check GitHub Pull Request Builder
@@ -172,7 +173,7 @@ sonar.github.oauth=<github-oauth-token>
 sonar.github.pullRequest=${ghprbPullId}
 sonar.github.repository=<repository>
 
-# Disable build breaker (no need in this job as SonarQube will report the issues directly to Github pull request as inline comment / regular comment)
+# Disable build breaker (set to true when triggering on pull requests, false for nightly)
 sonar.buildbreaker.skip=true
 
 # To change other default behaviour, find the behaviour in SonarQube -> Administation to find the keys.
