@@ -134,7 +134,7 @@ Triggers the jenkins build on webhook or cron (default 5 min) and generates the 
 - Check GitHub Pull Request Builder
   - Select credentials (from configuring plugins step)
   - Under advanced set options. Recommended to:  
-    - On "List of organizations" add `<organization-name>` to prevent the "Request for testing phrase" (configured in plugin settings) to trigger. Another option is to whitelist the users instead.
+    - On "List of organizations" add `<organization>` to prevent the "Request for testing phrase" (configured in plugin settings) to trigger. Another option is to whitelist the users instead.
   - If using webhook, point it at `http://localhost:8080/jenkins/ghprbhook/`
 
 ### Build Environment
