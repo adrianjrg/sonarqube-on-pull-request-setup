@@ -43,7 +43,7 @@ sonar.jdbc.password=<SONAR_PASSWORD>
 ```properties
 sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&characterEncoding=utf8&rewriteBatchedStatements=true&useConfigs=maxPerformance
 ```
-Make sure the Embedded database (just above MySQL) is commented out
+Make sure the Embedded database (just above MySQL) is commented out.
 		
 # Plugins
 
@@ -58,7 +58,7 @@ Needs when used from jenkins:
 sonar.github.oauth=<github-oauth-token>
 sonar.github.pullRequest=${ghprbPullId}
 ```
-${ghprbPullId} is the pull request number gotten from jenkins
+`${ghprbPullId}` is the environment variable that hold the pull request number that triggered the jenkins build.
 ```
 sonar.github.repository=<user>/<repository> or <organization>/<repository>
 ```
@@ -95,31 +95,33 @@ Triggers the jenkins build on webhook or cron (default 5 min) and generates the 
 ## Configuring plugins
 1. Open jenkins configure screen
     - Jenkins -> Manage Jenkins -> Configure System
-1. Under SonarQube servers ADD IMAGE HERE
+1. Under SonarQube servers
     - Add server information.  
       - To get `Server authentication token`:  
-		Go to SonarQube web interface  
-		Login as admin  
-		Go to Administation (top bar) -> Security (dropdown) -> Users -> Tokens (right side, per user) -> Generate
+        ![how to get token](https://raw.githubusercontent.com/adrianjrg/sonarqube-on-pull-request-setup/master/img/sonarqube-get-token.png)
+		1. Go to SonarQube web interface  
+		2. Login as admin  
+		3. Go to Administation (top bar) -> Security (dropdown) -> Users -> Tokens (right side, per user) -> Generate
 
-1. Under GitHub Pull Request Builder
-	Add secret (optional)
-	Add credentials (github-user/github-oauth-token)  
-    - Recommended to run this from a seperate 'bot' account  
-		Needs 'repo' permissions, including `repo:status`, `repo_deployment` and `public_repo`.  
-		Account needs at least pull access. Push access lets it put the results as 'tests' instead of comments, meaning the "Merge" button turns red on fail. 
+1. Under GitHub Pull Request Builder  
+	- Add secret (optional)  
+	- Add credentials (github-user/github-oauth-token)  
+	  - Needs 'repo' permissions, including `repo:status`, `repo_deployment` and `public_repo`.  
+	  - Account needs at least pull access. Push access lets it put the results as 'tests' instead of comments, meaning the "Merge" button turns red on fail. 
+      - Recommended to run this from a seperate 'bot' account  
 
-## Setting up Freestyle Project for Pull Requests ADD PICTURES
+## Setting up Freestyle Project for Pull Requests
 - Create a new freestyle project
 - Jenkins -> New Item -> Freestyle project
 ### General
 - (Optional) GitHub project (adds link to the github repository on the build page in jenkins)
 ### Source Code Management
+![Scm step](https://raw.githubusercontent.com/adrianjrg/sonarqube-on-pull-request-setup/master/img/step-scm.png)
 - Git
   - Add repository and credentials
   - Under Advanced  
   name: `origin`  
-  refspec: `+refs/pull/*:refs/remotes/origin/pr/*`  
+  refspec: `+refs/pull/${ghprbPullId}/*:refs/remotes/origin/pr/${ghprbPullId}/*`  
   Other refspec configurations:  
   
   | refspec | use | recommened by |
@@ -131,6 +133,7 @@ Triggers the jenkins build on webhook or cron (default 5 min) and generates the 
   - Set "Branches to build" to `${sha1}` (environment variable is set by GitHub Pull Request Builder)
 
 ### Build Triggers
+![Tiggers step](https://raw.githubusercontent.com/adrianjrg/sonarqube-on-pull-request-setup/master/img/step-triggers.png)
 - Check GitHub Pull Request Builder
   - Select credentials (from configuring plugins step)
   - Under advanced set options. Recommended to:  
@@ -138,9 +141,10 @@ Triggers the jenkins build on webhook or cron (default 5 min) and generates the 
   - If using webhook, point it at `http://localhost:8080/jenkins/ghprbhook/`
 
 ### Build Environment
-- No specific requirements
+- No specific requirements.
 
 ### Build
+![Build step](https://raw.githubusercontent.com/adrianjrg/sonarqube-on-pull-request-setup/master/img/step-build.png)
 - Add build block 'Execute SonarQube Scanner'
   - Under "Analysis properties" (replace `<organization>` and `<repository>` accordingly):
 ```properties
@@ -151,24 +155,24 @@ sonar.host.url=http://localhost:9000/
 sonar.projectKey=com:<organization>:<repository>
 # this is the name and version displayed in the SonarQube UI. Was mandatory prior to SonarQube 6.1.
 sonar.projectName=<repository>
-# Project version does not matter when in "preview" mode as nothing is saved to the db
+
 # "preview" mode is used when triggered by pull requests
+sonar.analysis.mode=preview
+
+# Project version does not matter when in "preview" mode as nothing is saved to the db
 # projectVersion can be any string
 sonar.projectVersion=${ghprbPullId}
 #sonar.projectVersion=origin/develop
 
 # Path is relative to the sonar-project.properties file. Replace "\" by "/" on Windows.
 # This property is optional if sonar.modules is set. 
-# "." results in every file being scanned
+# "." results in all files for which there are SonarQube plugins being scanned
 sonar.sources=.
 
 # Encoding of the source code. Default is default system encoding. Important as MySQL is set up for this encoding
 sonar.sourceEncoding=UTF-8
 
 # Github comment settings
-sonar.analysis.mode=preview
-# Unneeded
-#sonar.github.login=<user>
 sonar.github.oauth=<github-oauth-token>
 sonar.github.pullRequest=${ghprbPullId}
 sonar.github.repository=<repository>
@@ -177,7 +181,9 @@ sonar.github.repository=<repository>
 sonar.buildbreaker.skip=true
 
 # To change other default behaviour, find the behaviour in SonarQube -> Administation to find the keys.
-# These keys can be added to this section
 ```
   - Under "Additional arguments":
     - Add `-X` for full debugging, otherwise leave empty.
+
+### Post-build action
+  - No specific requirements.
