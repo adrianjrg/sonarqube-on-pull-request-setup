@@ -14,6 +14,7 @@
 2. Extract. From here on refered to as `<sonarqube-dir>`.
 
 # Database connection
+Not required if you are *only* scanning pull requests (and not storing information on scans).  
 Using information from: http://www.jouvinio.net/wiki/index.php/Sonar_Configuration_MySQL
 ## Database setup
 1. Create new schema for sonarqube:
@@ -156,7 +157,7 @@ sonar.projectKey=com:<organization>:<repository>
 # this is the name and version displayed in the SonarQube UI. Was mandatory prior to SonarQube 6.1.
 sonar.projectName=<repository>
 
-# "preview" mode is used when triggered by pull requests
+# "preview" mode is used when triggered by pull requests. Comment out on nightly scans
 sonar.analysis.mode=preview
 
 # Project version does not matter when in "preview" mode as nothing is saved to the db
