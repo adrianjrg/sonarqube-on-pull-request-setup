@@ -139,7 +139,7 @@ Triggers the jenkins build on webhook or cron (default 5 min) and generates the 
   - Select credentials (from configuring plugins step)
   - Under advanced set options. Recommended to:  
     - On "List of organizations" add `<organization>` to prevent the "Request for testing phrase" (configured in plugin settings) to trigger. Another option is to whitelist the users instead.
-  - If using webhook, point it at `http://localhost:8080/jenkins/ghprbhook/`
+  - If using webhook, point it at `http://<your-jenkins-server>:8080/jenkins/ghprbhook/`. This has to be accessible from the internet. The webhook should be triggered by `issue_comment` and `pull_request` events.
 
 ### Build Environment
 - No specific requirements.
